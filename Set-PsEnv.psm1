@@ -6,8 +6,14 @@ Exports environment variable from the .env file to the current process.
 This function looks for .env file in the current directoty, if present
 it loads the environment variable mentioned in the file to the current process.
 
+.Parameter
+envFile  The full path to an env file (defaults to .\.env)
+
 .Example
  Set-PsEnv
+ 
+ .Example
+ Set-PsEnv -envFile .env.staging
  
  .Example
  #.env file format
