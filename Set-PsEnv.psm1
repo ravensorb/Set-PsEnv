@@ -1,4 +1,3 @@
-$localEnvFile = ".\.env"
 <#
 .Synopsis
 Exports environment variable from the .env file to the current process.
@@ -30,7 +29,9 @@ it loads the environment variable mentioned in the file to the current process.
 #>
 function Set-PsEnv {
     [CmdletBinding(SupportsShouldProcess = $true, ConfirmImpact = 'Low')]
-    param()
+    param(
+       [string] $envFile = ".\.env"
+    )
 
     if($Global:PreviousDir -eq (Get-Location).Path){
         Write-Verbose "Set-PsEnv:Skipping same dir"
@@ -40,13 +41,13 @@ function Set-PsEnv {
     }
 
     #return if no env file
-    if (!( Test-Path $localEnvFile)) {
+    if (!( Test-Path $envFile)) {
         Write-Verbose "No .env file"
         return
     }
 
     #read the local env file
-    $content = Get-Content $localEnvFile -ErrorAction Stop
+    $content = Get-Content $envFile -ErrorAction Stop
     Write-Verbose "Parsed .env file"
 
     #load the content to environment
@@ -61,6 +62,11 @@ function Set-PsEnv {
         if($line.StartsWith("#")){
             Write-Verbose "Skipping comment: $line"
             continue
+        }
+
+        #check to see if line has an embedded comment and if so remove it
+        if ($line -like "*#*"){
+            $line = ($line -split "#")[0].Tim()
         }
 
         #get the operator
@@ -82,7 +88,7 @@ function Set-PsEnv {
             $key = $kvp[0].Trim()
             $value = $kvp[1].Trim()
         }
-
+        
         Write-Verbose "$key=$value"
         
         if ($PSCmdlet.ShouldProcess("environment variable $key", "set value $value")) {            
