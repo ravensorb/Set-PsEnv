@@ -39,13 +39,6 @@ function Set-PsEnv {
        [string] $envFile = ".\.env"
     )
 
-    if($Global:PreviousDir -eq (Get-Location).Path){
-        Write-Verbose "Set-PsEnv:Skipping same dir"
-        return
-    } else {
-        $Global:PreviousDir = (Get-Location).Path
-    }
-
     #return if no env file
     if (!( Test-Path $envFile)) {
         Write-Verbose "No .env file"
