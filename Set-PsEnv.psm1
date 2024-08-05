@@ -78,12 +78,17 @@ function Set-PsEnv {
             $key = $kvp[0].Trim()
             $value = '{1};{0}' -f (Get-PsEnv $kvp[1].Trim()), [System.Environment]::GetEnvironmentVariable($key)
         }
-        else {
+        elseif ($line -like '*=*') {
             Write-Verbose 'Assign'
             $kvp = $line -split '=', 2
             $key = $kvp[0].Trim()
             $value = Get-PsEnv $kvp[1].Trim()
         }
+        else {
+            Write-Verbose 'No operator: skipping'
+            continue
+        }
+
 
         Write-Verbose "$key=$value"
 
